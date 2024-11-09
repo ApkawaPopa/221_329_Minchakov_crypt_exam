@@ -45,14 +45,37 @@ void TransactionWindow::loadTransactionsFromFile(const QString &fileName) {
     }
 }
 
+QString TransactionWindow::calculateHash(const Transaction &transaction, const QString &previousHash) {
+    QString data = transaction.amount + transaction.walletNumber + transaction.dateTime + previousHash;
+    QByteArray hash = QCryptographicHash::hash(data.toUtf8(), QCryptographicHash::Sha256);
+    return hash.toHex();
+}
+
 void TransactionWindow::setText() {
+    QString previousHash = "";
+    bool invalidFound = false;
+
     ui->txtTransactions->clear();
     for (const Transaction &transaction: transactions) {
-        ui->txtTransactions->appendPlainText(
-            transaction.amount + ", " +
-            transaction.walletNumber + ", " +
-            transaction.dateTime + ", " +
-            transaction.hash
+        QString calculatedHash = calculateHash(transaction, previousHash);
+        previousHash = calculatedHash;
+
+        qDebug() << transaction.amount + ", " +
+                    transaction.walletNumber + ", " +
+                    transaction.dateTime + ", " +
+                    calculatedHash;
+
+        invalidFound = invalidFound || (calculatedHash != transaction.hash);
+
+        QString color = invalidFound ? "red" : "white";
+
+        ui->txtTransactions->appendHtml(
+                "<p style=\"color:" + color + "\">" +
+                transaction.amount + ", " +
+                transaction.walletNumber + ", " +
+                transaction.dateTime + ", " +
+                transaction.hash +
+                "</p>"
         );
     }
 }
