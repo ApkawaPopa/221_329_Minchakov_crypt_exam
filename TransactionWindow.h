@@ -27,8 +27,10 @@ private:
     Ui::TransactionWindow *ui;
     QList<Transaction> transactions;
     void loadTransactionsFromFile(const QString &fileName);
+    static QString calculateHash(const Transaction &transaction, const QString &previousHash);
     void setText();
     void displayTransactions(const QString &fileName);
+    void on_btnOpenFile_clicked();
 };
 
 
