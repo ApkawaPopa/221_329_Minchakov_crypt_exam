@@ -24,6 +24,13 @@
    <item>
     <widget class="QPlainTextEdit" name="txtTransactions"/>
    </item>
+   <item>
+    <widget class="QPushButton" name="btnOpenFile">
+     <property name="text">
+      <string>Открыть</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>

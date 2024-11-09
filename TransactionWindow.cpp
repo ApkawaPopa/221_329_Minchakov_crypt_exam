@@ -8,7 +8,16 @@
 TransactionWindow::TransactionWindow(QWidget *parent) :
         QWidget(parent), ui(new Ui::TransactionWindow) {
     ui->setupUi(this);
+    connect(ui->btnOpenFile, &QPushButton::clicked, this, &TransactionWindow::on_btnOpenFile_clicked);
     displayTransactions("../transactions.csv");
+}
+
+void TransactionWindow::on_btnOpenFile_clicked() {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Transaction File"), "", tr("CSV Files (*.csv)"));
+    if (!fileName.isEmpty()) {
+        loadTransactionsFromFile(fileName);
+        setText();
+    }
 }
 
 TransactionWindow::~TransactionWindow() {
@@ -59,11 +68,6 @@ void TransactionWindow::setText() {
     for (const Transaction &transaction: transactions) {
         QString calculatedHash = calculateHash(transaction, previousHash);
         previousHash = calculatedHash;
-
-        qDebug() << transaction.amount + ", " +
-                    transaction.walletNumber + ", " +
-                    transaction.dateTime + ", " +
-                    calculatedHash;
 
         invalidFound = invalidFound || (calculatedHash != transaction.hash);
 
